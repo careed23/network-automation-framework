@@ -7,12 +7,23 @@
 
 > A Python-based network automation framework for managing and configuring network devices at scale. Automate backups, deployments, and provisioning across multi-vendor environments.
 
+
 <p align="center">
   <img src="https://img.shields.io/badge/Cisco-IOS-1BA0D7?style=for-the-badge&logo=cisco&logoColor=white" alt="Cisco IOS"/>
   <img src="https://img.shields.io/badge/Juniper-Junos-84B135?style=for-the-badge&logo=juniper-networks&logoColor=white" alt="Juniper"/>
   <img src="https://img.shields.io/badge/Arista-EOS-FF6A00?style=for-the-badge&logo=arista&logoColor=white" alt="Arista"/>
 </p>
 
+## 🆕 New Features!
+
+Check out our latest additions:
+- ✅ [Configuration Compliance Checker](NEW_FEATURES.md#1️⃣-configuration-compliance-checker)
+- 📧 [Email & Slack Notifications](NEW_FEATURES.md#2️⃣-email--slack-notifications)
+- 🌐 [Web Dashboard](NEW_FEATURES.md#3️⃣-web-dashboard)
+
+See [NEW_FEATURES.md](NEW_FEATURES.md) for complete setup instructions!
+
+Use Cases
 ---
 
 ## 📋 Table of Contents

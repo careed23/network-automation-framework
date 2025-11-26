@@ -1,0 +1,94 @@
+{
+  "rules": [
+    {
+      "name": "NTP Server Configured",
+      "description": "Verify NTP server is configured for time synchronization",
+      "type": "must_contain",
+      "pattern": "ntp server"
+    },
+    {
+      "name": "SSH Version 2 Only",
+      "description": "Ensure only SSH version 2 is enabled (more secure)",
+      "type": "regex",
+      "pattern": "ip ssh version 2"
+    },
+    {
+      "name": "No Telnet Access",
+      "description": "Verify telnet is not enabled (insecure protocol)",
+      "type": "must_not_contain",
+      "pattern": "transport input telnet"
+    },
+    {
+      "name": "Logging Server Configured",
+      "description": "Verify centralized logging is configured",
+      "type": "must_contain",
+      "pattern": "logging host"
+    },
+    {
+      "name": "No Default SNMP Community",
+      "description": "Check for default/weak SNMP community strings",
+      "type": "must_not_contain",
+      "pattern": "snmp-server community public"
+    },
+    {
+      "name": "AAA Authentication",
+      "description": "Verify AAA authentication is configured",
+      "type": "must_contain",
+      "pattern": "aaa authentication"
+    },
+    {
+      "name": "Enable Secret Configured",
+      "description": "Ensure enable secret (not enable password) is used",
+      "type": "must_contain",
+      "pattern": "enable secret"
+    },
+    {
+      "name": "No Enable Password",
+      "description": "Verify enable password (weak) is not used",
+      "type": "must_not_contain",
+      "pattern": "enable password"
+    },
+    {
+      "name": "Service Password Encryption",
+      "description": "Verify password encryption is enabled",
+      "type": "must_contain",
+      "pattern": "service password-encryption"
+    },
+    {
+      "name": "Banner Configured",
+      "description": "Verify login banner is configured",
+      "type": "must_contain",
+      "pattern": "banner"
+    },
+    {
+      "name": "VTY Access Control",
+      "description": "Verify VTY lines have access control configured",
+      "type": "regex",
+      "pattern": "line vty.*\\n.*access-class"
+    },
+    {
+      "name": "Console Timeout",
+      "description": "Verify console timeout is configured",
+      "type": "regex",
+      "pattern": "line con.*\\n.*exec-timeout"
+    },
+    {
+      "name": "SNMP Version 3",
+      "description": "Check if SNMPv3 is configured (recommended)",
+      "type": "must_contain",
+      "pattern": "snmp-server group"
+    },
+    {
+      "name": "CDP Disabled on External",
+      "description": "Verify CDP is disabled (recommended for edge ports)",
+      "type": "must_contain",
+      "pattern": "no cdp run"
+    },
+    {
+      "name": "Spanning Tree Portfast",
+      "description": "Check for portfast on access ports",
+      "type": "regex",
+      "pattern": "spanning-tree portfast"
+    }
+  ]
+}
