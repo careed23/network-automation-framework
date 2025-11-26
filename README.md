@@ -47,6 +47,77 @@
 
 ---
 
+## 🏗️ Architecture
+
+The framework follows a modular architecture for flexibility and maintainability:
+```mermaid
+graph TB
+    subgraph User["👤 Network Engineer"]
+        CLI[Command Line Interface]
+    end
+    
+    subgraph Framework["🐍 Network Automation Framework"]
+        subgraph Core["Core Modules"]
+            DM[Device Manager<br/>Connection Handler]
+        end
+        
+        subgraph Features["Features"]
+            Backup[Config Backup<br/>Module]
+            Deploy[Config Deploy<br/>Module]
+        end
+        
+        subgraph Storage["Storage & Templates"]
+            Templates[Jinja2 Templates<br/>config/templates/]
+            BackupDir[Backup Storage<br/>backups/]
+            Logs[Logs<br/>logs/]
+        end
+    end
+    
+    subgraph Devices["🌐 Network Infrastructure"]
+        R1[Router 1<br/>Cisco IOS]
+        R2[Router 2<br/>Cisco IOS]
+        SW1[Switch 1<br/>Arista EOS]
+        SW2[Switch 2<br/>Juniper]
+        FW[Firewall<br/>Palo Alto]
+    end
+    
+    subgraph Config["⚙️ Configuration"]
+        YAML[devices.yaml<br/>Device Inventory]
+    end
+    
+    CLI -->|Run Scripts| Backup
+    CLI -->|Run Scripts| Deploy
+    
+    Backup --> DM
+    Deploy --> DM
+    
+    DM -->|SSH/Netmiko| R1
+    DM -->|SSH/Netmiko| R2
+    DM -->|SSH/Netmiko| SW1
+    DM -->|SSH/Netmiko| SW2
+    DM -->|SSH/Netmiko| FW
+    
+    Backup -->|Save configs| BackupDir
+    Deploy -->|Load templates| Templates
+    DM -->|Write logs| Logs
+    
+    YAML -.->|Device Info| DM
+    Templates -.->|Config Templates| Deploy
+    
+    style Framework fill:#e1f5ff
+    style Devices fill:#fff4e1
+    style Config fill:#f0f0f0
+    style User fill:#e8f5e9
+```
+
+**Key Components:**
+- **Device Manager**: Handles SSH connections via Netmiko
+- **Backup Module**: Automated configuration backups with timestamps
+- **Deploy Module**: Template-based configuration deployment
+- **Storage Layer**: Organized backup storage and Jinja2 templates
+
+---
+
 ## 🎬 Demo
 
 ```bash
