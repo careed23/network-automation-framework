@@ -1,6 +1,44 @@
+# Network Devices Configuration
+# Add your network devices here
+
 devices:
   - device_type: cisco_ios
     host: 192.168.1.1
     username: admin
     password: your_password
+    secret: your_enable_password  # Optional
     port: 22
+    
+  - device_type: cisco_ios
+    host: 192.168.1.2
+    username: admin
+    password: your_password
+    port: 22
+    
+  # - device_type: cisco_nxos
+  #   host: 192.168.1.10
+  #   username: admin
+  #   password: your_password
+  #   port: 22
+  
+  # - device_type: juniper_junos
+  #   host: 192.168.1.20
+  #   username: admin
+  #   password: your_password
+  #   port: 22
+  
+  # - device_type: arista_eos
+  #   host: 192.168.1.30
+  #   username: admin
+  #   password: your_password
+  #   port: 22
+
+# Supported device types (via Netmiko):
+# - cisco_ios
+# - cisco_nxos
+# - cisco_xr
+# - arista_eos
+# - juniper_junos
+# - hp_procurve
+# - dell_force10
+# - and many more...

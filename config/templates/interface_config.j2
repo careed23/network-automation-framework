@@ -1,0 +1,25 @@
+interface {{ interface_name }}
+ description {{ description | default('Configured by automation') }}
+ {% if ip_address %}
+ ip address {{ ip_address }} {{ subnet_mask }}
+ {% endif %}
+ {% if mode == 'access' %}
+ switchport mode access
+ switchport access vlan {{ vlan }}
+ {% elif mode == 'trunk' %}
+ switchport mode trunk
+ switchport trunk allowed vlan {{ allowed_vlans }}
+ {% endif %}
+ {% if spanning_tree %}
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ {% endif %}
+ no shutdown
+```
+
+**Final structure should look like:**
+```
+config/
+├── devices.yaml
+└── templates/
+    └── interface_config.j2   ← Your template goes here
