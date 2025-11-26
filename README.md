@@ -1,154 +1,370 @@
-Network Automation Framework
+# 🚀 Network Automation Framework
 
-A Python-based network automation framework for managing and configuring network devices at scale. This tool automates common network administration tasks including configuration backups, deployments, and template-based provisioning.
-Features
+[![Python Version](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/yourusername/network-automation-framework/graphs/commit-activity)
 
-Automated Configuration Backups: Schedule and execute backups of network device configurations
-Template-Based Deployment: Use Jinja2 templates to deploy standardized configurations
-Multi-Vendor Support: Works with Cisco, Juniper, Arista, HP, and many other vendors via Netmiko
-Centralized Management: Manage all devices from a single YAML configuration file
-Logging: Comprehensive logging for audit trails and troubleshooting
-Rollback Capability: Easily rollback to previous configurations
-Batch Operations: Execute commands across multiple devices simultaneously
+> A Python-based network automation framework for managing and configuring network devices at scale. Automate backups, deployments, and provisioning across multi-vendor environments.
 
-Use Cases
+<p align="center">
+  <img src="https://img.shields.io/badge/Cisco-IOS-1BA0D7?style=for-the-badge&logo=cisco&logoColor=white" alt="Cisco IOS"/>
+  <img src="https://img.shields.io/badge/Juniper-Junos-84B135?style=for-the-badge&logo=juniper-networks&logoColor=white" alt="Juniper"/>
+  <img src="https://img.shields.io/badge/Arista-EOS-FF6A00?style=for-the-badge&logo=arista&logoColor=white" alt="Arista"/>
+</p>
 
-Daily automated configuration backups
-Standardized device provisioning
-Configuration compliance checking
-Emergency rollback procedures
-Bulk configuration changes
-Network disaster recovery
+---
 
-Installation
-Prerequisites
+## 📋 Table of Contents
 
-Python 3.7 or higher
-Network devices accessible via SSH
-Valid credentials for your network devices
+- [Features](#-features)
+- [Demo](#-demo)
+- [Installation](#-installation)
+- [Quick Start](#-quick-start)
+- [Usage](#-usage)
+- [Configuration](#-configuration)
+- [Examples](#-examples)
+- [Project Structure](#-project-structure)
+- [Security](#-security)
+- [Roadmap](#-roadmap)
+- [Contributing](#-contributing)
+- [License](#-license)
 
-Setup
+---
 
-Clone this repository:
+## ✨ Features
 
-bashgit clone https://github.com/yourusername/network-automation-framework.git
+| Feature | Description |
+|---------|-------------|
+| 🔄 **Automated Backups** | Schedule and execute configuration backups with timestamps |
+| 📝 **Template Engine** | Jinja2-powered configuration templates for standardized deployments |
+| 🔌 **Multi-Vendor** | Support for Cisco, Juniper, Arista, HP, and 50+ vendors via Netmiko |
+| 📊 **Comprehensive Logging** | Detailed audit trails for compliance and troubleshooting |
+| ⏮️ **Rollback Support** | One-command rollback to previous configurations |
+| 🎯 **Batch Operations** | Execute commands across multiple devices simultaneously |
+| 🔐 **Secure by Design** | Credential management best practices built-in |
+| 🛠️ **Easy Configuration** | Simple YAML-based device inventory |
+
+---
+
+## 🎬 Demo
+
+```bash
+# Backup all devices
+$ python scripts/config_backup.py
+
+[INFO] Connecting to 192.168.1.1
+[INFO] Successfully connected to 192.168.1.1
+[INFO] Backup saved: backups/192.168.1.1_20240115_143022.txt
+[INFO] ✓ 5 devices backed up successfully
+
+# Deploy configuration template
+$ python scripts/config_deploy.py --template interface_config.j2 \
+  --vars '{"interface_name": "GigabitEthernet0/1", "vlan": 10}'
+
+[INFO] Configuration deployed to 192.168.1.1
+[INFO] ✓ Deployment successful
+```
+
+---
+
+## 🚀 Installation
+
+### Prerequisites
+
+- Python 3.7 or higher
+- SSH access to network devices
+- Valid device credentials
+
+### Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/network-automation-framework.git
 cd network-automation-framework
 
-Create a virtual environment (recommended):
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
 
-bashpython -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+# Install dependencies
+pip install -r requirements.txt
 
-Install dependencies:
+# Create required directories
+mkdir -p backups logs config/templates
+```
 
-bashpip install -r requirements.txt
+---
 
-Create necessary directories:
+## ⚡ Quick Start
 
-bashmkdir -p backups logs config/templates
+1. **Configure your devices** in `config/devices.yaml`:
 
-Configure your devices in config/devices.yaml:
-
-yamldevices:
+```yaml
+devices:
   - device_type: cisco_ios
     host: 192.168.1.1
     username: admin
     password: your_password
     port: 22
-Usage
-Configuration Backup
-Backup all devices defined in your configuration:
-bashpython scripts/config_backup.py
-Specify custom devices file or backup directory:
-bashpython scripts/config_backup.py --devices config/devices.yaml --backup-dir backups
-Configuration Deployment
-Deploy specific commands to all devices:
-bashpython scripts/config_deploy.py --commands "interface GigabitEthernet0/1" "description Uplink to Core"
-Deploy commands to a specific device:
-bashpython scripts/config_deploy.py --host 192.168.1.1 --commands "ntp server 10.0.0.1"
-Deploy from a configuration file:
-bashpython scripts/config_deploy.py --file config/my_config.txt
-Deploy using a Jinja2 template:
-bashpython scripts/config_deploy.py --template interface_config.j2 --vars '{"interface": "GigabitEthernet0/1", "vlan": 100}'
-Rollback Configuration
-Rollback to a previous backup:
-bashpython scripts/config_deploy.py --host 192.168.1.1 --file backups/192.168.1.1_20240115_143022.txt
-Project Structure
-network-automation-framework/
-├── README.md                 # This file
-├── requirements.txt          # Python dependencies
-├── config/
-│   ├── devices.yaml         # Device inventory
-│   └── templates/           # Jinja2 configuration templates
-├── scripts/
-│   ├── __init__.py
-│   ├── device_manager.py    # Core device connection module
-│   ├── config_backup.py     # Backup functionality
-│   └── config_deploy.py     # Deployment functionality
-├── backups/                 # Configuration backups stored here
-├── logs/                    # Application logs
-└── examples/                # Example configurations and templates
-Configuration Templates
-Create Jinja2 templates in config/templates/ for standardized deployments:
-Example: interface_config.j2
-jinjainterface {{ interface }}
- description {{ description }}
- switchport mode {{ mode }}
- switchport access vlan {{ vlan }}
+```
+
+2. **Run your first backup**:
+
+```bash
+python scripts/config_backup.py
+```
+
+3. **Deploy a configuration**:
+
+```bash
+python scripts/config_deploy.py --host 192.168.1.1 \
+  --commands "ntp server 10.0.0.1"
+```
+
+📖 See [QUICKSTART.md](QUICKSTART.md) for detailed instructions.
+
+---
+
+## 💻 Usage
+
+### Configuration Backup
+
+```bash
+# Backup all devices
+python scripts/config_backup.py
+
+# Custom backup directory
+python scripts/config_backup.py --backup-dir /path/to/backups
+
+# Specific devices file
+python scripts/config_backup.py --devices config/prod_devices.yaml
+```
+
+### Configuration Deployment
+
+```bash
+# Deploy specific commands
+python scripts/config_deploy.py --commands \
+  "interface GigabitEthernet0/1" \
+  "description Uplink to Core"
+
+# Deploy to specific device
+python scripts/config_deploy.py --host 192.168.1.1 \
+  --file config/my_config.txt
+
+# Use template with variables
+python scripts/config_deploy.py --template interface_config.j2 \
+  --vars '{"interface_name": "Gi0/1", "vlan": 100}'
+```
+
+### Rollback Configuration
+
+```bash
+python scripts/config_deploy.py --host 192.168.1.1 \
+  --file backups/192.168.1.1_20240115_143022.txt
+```
+
+---
+
+## ⚙️ Configuration
+
+### Device Inventory (`config/devices.yaml`)
+
+```yaml
+devices:
+  - device_type: cisco_ios
+    host: 192.168.1.1
+    username: admin
+    password: secure_password
+    secret: enable_password  # Optional
+    port: 22
+    
+  - device_type: juniper_junos
+    host: 192.168.1.10
+    username: netadmin
+    password: secure_password
+    port: 22
+```
+
+### Supported Device Types
+
+<details>
+<summary>Click to expand supported platforms</summary>
+
+- Cisco: `cisco_ios`, `cisco_nxos`, `cisco_xr`, `cisco_asa`
+- Juniper: `juniper_junos`
+- Arista: `arista_eos`
+- HP: `hp_procurve`, `hp_comware`
+- Dell: `dell_force10`, `dell_os10`
+- Palo Alto: `paloalto_panos`
+- And 40+ more via [Netmiko](https://github.com/ktbyers/netmiko)
+
+</details>
+
+---
+
+## 📚 Examples
+
+### Example 1: Bulk Interface Configuration
+
+Create `config/templates/bulk_interface.j2`:
+
+```jinja
+{% for interface in interfaces %}
+interface {{ interface.name }}
+ description {{ interface.description }}
+ switchport access vlan {{ interface.vlan }}
  no shutdown
-Security Best Practices
+{% endfor %}
+```
 
-Never commit credentials: Add config/devices.yaml to .gitignore
-Use environment variables: Store sensitive data in environment variables
-Restrict file permissions: Limit access to configuration files
-Use SSH keys: Prefer key-based authentication over passwords
-Enable logging: Monitor all automation activities
-Test first: Always test on non-production devices first
+Deploy:
 
-Supported Platforms
-This framework supports any device compatible with Netmiko, including:
+```bash
+python scripts/config_deploy.py --template bulk_interface.j2 \
+  --vars '{"interfaces": [
+    {"name": "Gi0/1", "description": "Workstation", "vlan": 10},
+    {"name": "Gi0/2", "description": "Printer", "vlan": 20}
+  ]}'
+```
 
-Cisco IOS, IOS-XE, IOS-XR, NX-OS, ASA
-Juniper Junos
-Arista EOS
-HP ProCurve
-Dell Force10
-Palo Alto PAN-OS
-Many more...
+### Example 2: Python Integration
 
-See the Netmiko documentation for a complete list.
-Troubleshooting
-Connection Failures
-Check the logs in logs/network_automation.log for detailed error messages:
+```python
+from scripts.device_manager import DeviceManager
+from scripts.config_backup import ConfigBackup
 
-Verify device IP addresses and SSH connectivity
-Confirm credentials are correct
-Ensure SSH is enabled on devices
-Check firewall rules and network ACLs
+# Backup a device programmatically
+device_config = {
+    'device_type': 'cisco_ios',
+    'host': '192.168.1.1',
+    'username': 'admin',
+    'password': 'password'
+}
 
-Authentication Issues
+backup_manager = ConfigBackup()
+backup_manager.backup_device(device_config)
+```
 
-Verify username and password in devices.yaml
-For Cisco devices, you may need to specify the secret for enable mode
-Check if devices require key-based authentication
+More examples in [`examples/example_usage.py`](examples/example_usage.py)
 
-Contributing
-Contributions are welcome! Please feel free to submit issues or pull requests.
-Future Enhancements
+---
 
- Web-based dashboard for monitoring
- Configuration compliance checking
- Scheduled backup jobs via cron
- Integration with version control (Git)
- Ansible playbook integration
- REST API for remote operations
- Configuration diff and change tracking
- Multi-threading for faster operations
+## 📁 Project Structure
 
-Author
-Colten Reed - https://github.com/careed23
-Acknowledgments
+```
+network-automation-framework/
+├── 📄 README.md                 # This file
+├── 📄 QUICKSTART.md             # Quick start guide
+├── 📄 requirements.txt          # Python dependencies
+├── 📄 .gitignore               # Git ignore rules
+│
+├── 📂 config/
+│   ├── 📄 devices.yaml         # Device inventory
+│   └── 📂 templates/           # Jinja2 templates
+│       └── 📄 interface_config.j2
+│
+├── 📂 scripts/
+│   ├── 📄 __init__.py
+│   ├── 📄 device_manager.py    # Core device connections
+│   ├── 📄 config_backup.py     # Backup functionality
+│   └── 📄 config_deploy.py     # Deployment functionality
+│
+├── 📂 examples/
+│   └── 📄 example_usage.py     # Usage examples
+│
+├── 📂 backups/                 # Configuration backups
+└── 📂 logs/                    # Application logs
+```
 
-Built with Netmiko for network device connections
-Uses Jinja2 for configuration templating# network-automation-framework
-A production-ready network automation tool that streamlines device management across Cisco, Juniper, Arista, and other vendors. Features automated configuration backups, Jinja2 template deployments, rollback capabilities, and comprehensive logging for enterprise network operations.
+---
+
+## 🔐 Security
+
+### Best Practices Implemented
+
+- ✅ Credentials stored in YAML (excluded from Git)
+- ✅ Comprehensive logging for audit trails
+- ✅ SSH-based authentication
+- ✅ No hardcoded passwords in code
+- ✅ File permission recommendations
+
+### Security Recommendations
+
+```bash
+# Restrict permissions on sensitive files
+chmod 600 config/devices.yaml
+
+# Use environment variables for credentials
+export DEVICE_PASSWORD='your_password'
+
+# Consider using SSH keys instead of passwords
+```
+
+> ⚠️ **Warning**: Never commit `config/devices.yaml` to version control!
+
+---
+
+## 🗺️ Roadmap
+
+- [ ] 🌐 Web-based dashboard for monitoring
+- [ ] ✅ Configuration compliance checking
+- [ ] ⏰ Scheduled backup jobs (cron integration)
+- [ ] 🔄 Git integration for version control
+- [ ] 📡 REST API for remote operations
+- [ ] 🔍 Configuration diff and change tracking
+- [ ] ⚡ Multi-threading for faster operations
+- [ ] 📊 Reporting and analytics dashboard
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Here's how you can help:
+
+1. 🍴 Fork the repository
+2. 🌟 Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. 💾 Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. 📤 Push to the branch (`git push origin feature/AmazingFeature`)
+5. 🎉 Open a Pull Request
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct.
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 👤 Author
+
+**Your Name**
+
+- GitHub: [@yourusername](https://github.com/yourusername)
+- LinkedIn: [Your LinkedIn](https://linkedin.com/in/yourprofile)
+- Email: your.email@example.com
+
+---
+
+## 🙏 Acknowledgments
+
+- [Netmiko](https://github.com/ktbyers/netmiko) - Network device connectivity
+- [Jinja2](https://jinja.palletsprojects.com/) - Configuration templating
+- [PyYAML](https://pyyaml.org/) - YAML parsing
+
+---
+
+## 📊 Project Stats
+
+![GitHub stars](https://img.shields.io/github/stars/yourusername/network-automation-framework?style=social)
+![GitHub forks](https://img.shields.io/github/forks/yourusername/network-automation-framework?style=social)
+![GitHub issues](https://img.shields.io/github/issues/yourusername/network-automation-framework)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/yourusername/network-automation-framework)
+
+---
+
+<p align="center">Made with ❤️ for Network Engineers</p>
+<p align="center">⭐ Star this repo if you find it helpful!</p>
