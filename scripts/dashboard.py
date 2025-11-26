@@ -11,15 +11,48 @@ from datetime import datetime
 import sys
 
 # Add scripts directory to path
-sys.path.append('scripts')
+# This allows us to import other modules in the scripts/ folder
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(current_dir)
 
 from config_backup import ConfigBackup
 from config_deploy import ConfigDeploy
 from config_compliance import ComplianceChecker
 from device_manager import load_devices_from_yaml
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your-secret-key-change-this'
+# --- SMART TEMPLATE DETECTION ---
+# We check both possible locations for the dashboard.html file
+possible_paths = [
+    os.path.join(current_dir, '..', 'templates'),          # Standard root templates/
+    os.path.join(current_dir, '..', 'config', 'templates') # Original config/templates/
+]
+
+template_folder_path = None
+
+print("-" * 60)
+print("🔍 Searching for dashboard.html...")
+
+for path in possible_paths:
+    full_path = os.path.abspath(path)
+    check_file = os.path.join(full_path, 'dashboard.html')
+    
+    if os.path.exists(check_file):
+        template_folder_path = full_path
+        print(f"✅ FOUND template at: {check_file}")
+        break
+    else:
+        print(f"❌ Not found at: {check_file}")
+
+if not template_folder_path:
+    print("\n⚠️ CRITICAL ERROR: 'dashboard.html' was not found in any expected folder.")
+    print("Please ensure the file exists in either 'templates/' or 'config/templates/'.")
+    # Fallback to root templates to allow app to initialize (will 404 on load)
+    template_folder_path = os.path.join(current_dir, '..', 'templates')
+print("-" * 60)
+
+# Initialize Flask with the detected folder
+app = Flask(__name__, template_folder=template_folder_path)
+app.config['SECRET_KEY'] = 'your-your-secret-key-change-this'
 
 logger = logging.getLogger(__name__)
 
