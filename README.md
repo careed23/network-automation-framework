@@ -343,8 +343,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Your Name**
 
-- GitHub: [@ycareed23](https://github.com/careed23)
-- LinkedIn: [Your LinkedIn](https://linkedin.com/in/yourprofile)
+- GitHub: [@careed23](https://github.com/careed23)
+- LinkedIn: [Your LinkedIn](https://www.linkedin.com/in/colten-reed-8395b6389/)
 - Email: careed23@outlook.com
 
 ---
