@@ -1,7 +1,6 @@
 import yaml
 import logging
-# Netmiko is used for network connectivity, which is implied by the framework design.
-from netmiko import ConnectHandler 
+from netmiko import ConnectHandler
 
 logger = logging.getLogger(__name__)
 
@@ -23,11 +22,7 @@ class DeviceManager:
     def connect(self):
         """Establish connection to the network device"""
         try:
-            # We use a copy of the config to avoid modifying the original dictionary
             connect_config = self.device_config.copy()
-            
-            # Netmiko requires 'host' instead of 'ip' in some contexts, but 'host' is safer
-            connect_config['host'] = connect_config.pop('host') 
             
             logger.info(f"Connecting to {connect_config['host']}")
             
@@ -59,8 +54,6 @@ class DeviceManager:
         except Exception as e:
             logger.error(f"Failed to send command: {str(e)}")
             return None
-
-    # START OF THE CODE YOU PROVIDED, NOW CORRECTLY INDENTED
 
     def send_config(self, config_commands):
         """
@@ -122,16 +115,11 @@ class DeviceManager:
             logger.error(f"Failed to save configuration: {str(e)}")
             return False
 
-# END OF THE CLASS DEFINITION
-
 def load_devices_from_yaml(yaml_file):
-    # ... (code for try block)
     try:
         with open(yaml_file, 'r') as f:
             data = yaml.safe_load(f)
             return data.get('devices', [])
-    except Exception as e: # Note the 'as e' for error message use
+    except Exception as e:
         logger.error(f"Failed to load devices from {yaml_file}: {str(e)}")
-        return [] # This return statement must be indented
-
-# ... rest of the file
+        return []

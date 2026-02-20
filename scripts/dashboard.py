@@ -11,7 +11,6 @@ from datetime import datetime
 import sys
 
 # Add scripts directory to path
-# This allows us to import other modules in the scripts/ folder
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(current_dir)
 
@@ -20,41 +19,37 @@ from config_deploy import ConfigDeploy
 from config_compliance import ComplianceChecker
 from device_manager import load_devices_from_yaml
 
-# --- SMART TEMPLATE DETECTION ---
-# We check both possible locations for the dashboard.html file
+# Locate dashboard.html in expected template directories
 possible_paths = [
-    os.path.join(current_dir, '..', 'templates'),          # Standard root templates/
-    os.path.join(current_dir, '..', 'config', 'templates') # Original config/templates/
+    os.path.join(current_dir, '..', 'templates'),
+    os.path.join(current_dir, '..', 'config', 'templates'),
 ]
 
 template_folder_path = None
-
-print("-" * 60)
-print("🔍 Searching for dashboard.html...")
-
 for path in possible_paths:
     full_path = os.path.abspath(path)
-    check_file = os.path.join(full_path, 'dashboard.html')
-    
-    if os.path.exists(check_file):
+    if os.path.exists(os.path.join(full_path, 'dashboard.html')):
         template_folder_path = full_path
-        print(f"✅ FOUND template at: {check_file}")
         break
-    else:
-        print(f"❌ Not found at: {check_file}")
 
 if not template_folder_path:
-    print("\n⚠️ CRITICAL ERROR: 'dashboard.html' was not found in any expected folder.")
-    print("Please ensure the file exists in either 'templates/' or 'config/templates/'.")
-    # Fallback to root templates to allow app to initialize (will 404 on load)
+    # Fallback; dashboard will 404 until the template is placed correctly
     template_folder_path = os.path.join(current_dir, '..', 'templates')
-print("-" * 60)
+
+logger = logging.getLogger(__name__)
 
 # Initialize Flask with the detected folder
 app = Flask(__name__, template_folder=template_folder_path)
-app.config['SECRET_KEY'] = 'your-your-secret-key-change-this'
-
-logger = logging.getLogger(__name__)
+_secret_key = os.environ.get('SECRET_KEY')
+if not _secret_key:
+    logger.warning(
+        "SECRET_KEY environment variable not set. "
+        "Sessions will not persist across restarts. "
+        "Set SECRET_KEY for production use."
+    )
+    _secret_key = os.urandom(24)
+app.config['SECRET_KEY'] = _secret_key
+del _secret_key
 
 
 @app.route('/')
@@ -260,7 +255,11 @@ def get_stats():
 def download_backup(filename):
     """Download a backup file"""
     try:
-        filepath = os.path.join('backups', filename)
+        backup_dir = os.path.abspath('backups')
+        # Prevent path traversal: resolve the full path and confirm it stays inside backup_dir
+        filepath = os.path.abspath(os.path.join(backup_dir, filename))
+        if os.path.commonpath([backup_dir, filepath]) != backup_dir:
+            return jsonify({'success': False, 'error': 'Invalid filename'}), 400
         if os.path.exists(filepath):
             return send_file(filepath, as_attachment=True)
         else:
@@ -274,4 +273,5 @@ if __name__ == '__main__':
     os.makedirs('templates', exist_ok=True)
     
     # Run the app
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    debug_mode = os.environ.get('FLASK_DEBUG', 'false').lower() == 'true'
+    app.run(debug=debug_mode, host='0.0.0.0', port=5000)

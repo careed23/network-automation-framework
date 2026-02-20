@@ -5,6 +5,7 @@ Validates device configurations against defined compliance rules
 
 import re
 import json
+import os
 import logging
 from datetime import datetime
 from device_manager import DeviceManager, load_devices_from_yaml
@@ -218,7 +219,6 @@ class ComplianceChecker:
                     return results
             else:
                 # Load from latest backup
-                import os
                 backup_dir = 'backups'
                 backups = [f for f in os.listdir(backup_dir) 
                           if f.startswith(hostname) and f.endswith('.txt')]
