@@ -15,11 +15,3 @@ interface {{ interface_name }}
  spanning-tree bpduguard enable
  {% endif %}
  no shutdown
-```
-
-**Final structure should look like:**
-```
-config/
-├── devices.yaml
-└── templates/
-    └── interface_config.j2   ← Your template goes here
